@@ -16,18 +16,19 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class SendMessageHandler implements HttpHandler {
-//    private static final Logger LOGGER = Logger.getLogger(SendMessageHandler.class.getName());
+
+    private static final Logger logger = Logger.getLogger(LoggerHandler.class.getName());
     private GeneralData generalData = GeneralData.getInstance();
     private HTTP http = HTTP.getInstance();
 
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
+    public void handle(HttpExchange httpExchange) {
         JsonModel jsonModel;
         try {
             jsonModel = new Gson().fromJson(getBodyFromHttpExchange(httpExchange), new TypeToken<JsonModel>() {}.getType());
             if (jsonModel == null) throw new Exception();
         } catch (Exception e){
-//            LOGGER.info("Cannot convert json to model");
+            logger.info("Cannot convert json to model");
             http.createResponse(httpExchange, 401, "{\"text\":\"Cannot convert json to model\"}");
             return;
         }
@@ -40,7 +41,7 @@ public class SendMessageHandler implements HttpHandler {
         return;
     }
 
-    private String getBodyFromHttpExchange(HttpExchange httpExchange) throws Exception {
+    private String getBodyFromHttpExchange(HttpExchange httpExchange) throws IOException {
         BufferedReader httpInput = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody(), "UTF-8"));
         String input;
         StringBuilder in = new StringBuilder();
@@ -51,7 +52,7 @@ public class SendMessageHandler implements HttpHandler {
         return in.toString().trim();
     }
 
-    private void sendMessage(HttpExchange httpExchange, String botToken, JsonModel jsonModel) throws IOException {
+    private void sendMessage(HttpExchange httpExchange, String botToken, JsonModel jsonModel)  {
         try {
             ArrayList<String> chat_id = (ArrayList<String>) jsonModel.getTelegramDispatcher().get("chat_id");
             chat_id.forEach(chatId -> {
@@ -60,7 +61,7 @@ public class SendMessageHandler implements HttpHandler {
             });
             http.createResponse(httpExchange, 200, "{\"text\":\"Successfully sent messages\"}");
         } catch (Exception e){
-//            LOGGER.info("Json parse error");
+            logger.info("Json parse error");
             http.createResponse(httpExchange, 200, "{\"text\":\"Json parse error\"}");
         }
     }

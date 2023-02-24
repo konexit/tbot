@@ -11,18 +11,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 public class GeneralData {
 
-    private static Logger logger = Logger.getLogger(GeneralData.class.getName());
-
     private Map<String, TelegramBotModel> listTelegramBot;
-
     private String accessToken = "f345tg34.3453grgyu576.34543teteru";
     private String telegramURL;
-
-    PropertiesConfiguration config = new PropertiesConfiguration();
 
     private static GeneralData generalData;
     private GeneralData() {}
@@ -31,14 +25,15 @@ public class GeneralData {
         return generalData;
     }
 
-    public void start() {
-        refreshTelegramConfig();
+    public void config() {
+        PropertiesConfiguration config = new PropertiesConfiguration();
         try {
             config.load("application.properties");
             telegramURL = config.getString("telegram.URL");
         } catch (ConfigurationException e) {
             e.printStackTrace();
         }
+        refreshTelegramConfig();
     }
 
     public void refreshTelegramConfig() {
@@ -48,7 +43,6 @@ public class GeneralData {
     private String getJsonFromFileTelegramConfig(){
         String fileContent = "";
         try {
-            //todo get file by relative path
             byte[] bytes = Files.readAllBytes(Paths.get("telegramBotConfig.txt"));
             fileContent = new String (bytes);
         } catch (IOException e) {

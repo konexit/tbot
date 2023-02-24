@@ -8,8 +8,6 @@ import telegram.GeneralData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.LocalTime;
-import java.util.Date;
 
 public class HTTP {
 
@@ -51,12 +49,14 @@ public class HTTP {
         return response;
     }
 
-    public void createResponse(HttpExchange httpExchange, int code, String json) throws IOException {
-        httpExchange.sendResponseHeaders(code, json.length());
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(json.getBytes());
-        os.close();
-        System.out.println("end " + new Date());
+    public void createResponse(HttpExchange httpExchange, int code, String json) {
+        try {
+            httpExchange.sendResponseHeaders(code, json.length());
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(json.getBytes());
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
-
