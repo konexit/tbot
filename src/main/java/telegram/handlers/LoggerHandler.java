@@ -14,7 +14,7 @@ public class LoggerHandler extends Formatter{
         Handler fileHandler;
         try{
             consoleHandler = new ConsoleHandler();
-            fileHandler = new FileHandler("dispatcherTelegram.log", 500, 1);
+            fileHandler = new FileHandler("dispatcherTelegram.log", 50000, 1, true);
             logger.addHandler(consoleHandler);
             logger.addHandler(fileHandler);
             logger.setUseParentHandlers(false);

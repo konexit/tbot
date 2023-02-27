@@ -1,6 +1,7 @@
 package telegram;
 
 import com.sun.net.httpserver.HttpServer;
+import telegram.config.GeneralData;
 import telegram.handlers.GetUpdatesHandler;
 import telegram.handlers.LoggerHandler;
 import telegram.handlers.SendMessageHandler;
@@ -12,8 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main {
     public static void main(String[] args)  {
-        GeneralData generalData = GeneralData.getInstance();
-        generalData.config();
+        GeneralData.getInstance().config();
         new LoggerHandler().confLog();
 
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);

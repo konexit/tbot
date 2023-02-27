@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import telegram.GeneralData;
+import telegram.config.GeneralData;
 import telegram.http.HTTP;
 import telegram.models.JsonModel;
 import telegram.models.TelegramBotModel;
@@ -33,11 +33,8 @@ public class SendMessageHandler implements HttpHandler {
             return;
         }
         TelegramBotModel telegramBotModelMap = generalData.getListTelegramBot(jsonModel.getBot());
-        if (telegramBotModelMap == null || !telegramBotModelMap.getState()){
-            http.createResponse(httpExchange, 200, "{\"text\":\"The server is under maintenance\"}");
-        } else {
-            sendMessage(httpExchange, jsonModel.getBot(), jsonModel);
-        }
+        if (telegramBotModelMap == null || !telegramBotModelMap.getState()) http.createResponse(httpExchange, 200, "{\"text\":\"The server is under maintenance\"}");
+        else sendMessage(httpExchange, jsonModel.getBot(), jsonModel);
         return;
     }
 
@@ -52,12 +49,12 @@ public class SendMessageHandler implements HttpHandler {
         return in.toString().trim();
     }
 
-    private void sendMessage(HttpExchange httpExchange, String botToken, JsonModel jsonModel)  {
+    private void sendMessage(HttpExchange httpExchange, String botToken, JsonModel jsonModel) {
         try {
             ArrayList<String> chat_id = (ArrayList<String>) jsonModel.getTelegramDispatcher().get("chat_id");
             chat_id.forEach(chatId -> {
                 jsonModel.setTelegramValue("chat_id", chatId);
-                http.sendMessage(botToken, new Gson().toJson(jsonModel.getTelegram()));
+                http.postRequest(generalData.getTelegramURL() + "/bot" + botToken + "/sendMessage", new Gson().toJson(jsonModel.getTelegram()));
             });
             http.createResponse(httpExchange, 200, "{\"text\":\"Successfully sent messages\"}");
         } catch (Exception e){

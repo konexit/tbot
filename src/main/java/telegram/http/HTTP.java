@@ -2,16 +2,17 @@ package telegram.http;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sun.net.httpserver.HttpExchange;
-import telegram.GeneralData;
+import telegram.config.GeneralData;
+import telegram.handlers.LoggerHandler;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Logger;
 
 public class HTTP {
-
-    GeneralData generalData = GeneralData.getInstance();
 
     private static HTTP http;
     private HTTP() {}
@@ -20,31 +21,33 @@ public class HTTP {
         return http;
     }
 
-    public HttpResponse sendServer(String serverURL, InputStream json) {
+    private static final Logger logger = Logger.getLogger(LoggerHandler.class.getName());
+
+    public HttpResponse postRequestWithToken(String serverURL, InputStream json, String token) {
         HttpResponse response = null;
         try {
             response = Unirest.post(serverURL)
                     .header("Accept", "application/json")
-                    .header("Authorization", "Basic " + generalData.getAccessToken())
+                    .header("Authorization", "Basic " + token)
                     .header("Content-Type", "application/json")
                     .body(json)
                     .asString();
-        } catch (Exception e) {
-            e.getStackTrace();
+        } catch (UnirestException e) {
+            logger.info("HTTP: EXCEPTION! sendServerToken()... " + e.getStackTrace());
         }
         return response;
     }
 
-    public HttpResponse sendMessage(String botToken, String json) {
+    public HttpResponse postRequest(String serverURL, String json) {
         HttpResponse response = null;
         try {
-            response = Unirest.post(generalData.getTelegramURL() + "/bot" + botToken + "/sendMessage")
+            response = Unirest.post(serverURL)
                     .header("Accept", "application/json")
                     .header("Content-Type", "application/json")
                     .body(json)
                     .asString();
-        } catch (Exception e) {
-            System.out.println("request error " + e.getStackTrace());
+        } catch (UnirestException e) {
+            logger.info("HTTP: EXCEPTION! sendServer()... " + e.getStackTrace());
         }
         return response;
     }
