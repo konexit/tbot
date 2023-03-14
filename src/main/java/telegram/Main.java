@@ -15,7 +15,6 @@ public class Main {
     public static void main(String[] args)  {
         GeneralData.getInstance().config();
         new LoggerHandler().confLog();
-
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress("10.10.5.173", 8081), 0);

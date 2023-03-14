@@ -4,11 +4,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sun.net.httpserver.HttpExchange;
-import telegram.config.GeneralData;
 import telegram.handlers.LoggerHandler;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
@@ -23,12 +21,12 @@ public class HTTP {
 
     private static final Logger logger = Logger.getLogger(LoggerHandler.class.getName());
 
-    public HttpResponse postRequestWithToken(String serverURL, InputStream json, String token) {
+    public HttpResponse postRequestWithToken(String serverURL, String json, String token) {
         HttpResponse response = null;
         try {
             response = Unirest.post(serverURL)
                     .header("Accept", "application/json")
-                    .header("Authorization", "Basic " + token)
+                    .header("Authorization", "Bearer " + token)
                     .header("Content-Type", "application/json")
                     .body(json)
                     .asString();

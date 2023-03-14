@@ -5,8 +5,7 @@ import com.sun.net.httpserver.HttpHandler;
 import telegram.config.GeneralData;
 import telegram.http.HTTP;
 import telegram.models.TelegramBotModel;
-
-import java.io.ByteArrayInputStream;
+import telegram.unit.Converter;
 
 public class GetUpdatesHandler implements HttpHandler {
 
@@ -18,6 +17,9 @@ public class GetUpdatesHandler implements HttpHandler {
         String botToken = httpExchange.getRequestURI().toString().split("\\?")[1].split("=")[1];
         TelegramBotModel telegramBotModelMap = generalData.getListTelegramBot(botToken);
         if (telegramBotModelMap == null || !telegramBotModelMap.getState()) http.createResponse(httpExchange, 200, "{\"text\":\"The server is under maintenance\"}");
-        else http.postRequestWithToken(telegramBotModelMap.getServer(), httpExchange.getRequestBody(), generalData.getAccessToken());
+        else {
+            http.postRequestWithToken(telegramBotModelMap.getServer(), Converter.getBodyFromHttpExchange(httpExchange), generalData.getAccessToken());
+            http.createResponse(httpExchange, 200, "{\"text\":\"Success send to server \"}");
+        }
     }
 }

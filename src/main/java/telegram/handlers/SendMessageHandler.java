@@ -8,10 +8,8 @@ import telegram.config.GeneralData;
 import telegram.http.HTTP;
 import telegram.models.JsonModel;
 import telegram.models.TelegramBotModel;
+import telegram.unit.Converter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -25,7 +23,7 @@ public class SendMessageHandler implements HttpHandler {
     public void handle(HttpExchange httpExchange) {
         JsonModel jsonModel;
         try {
-            jsonModel = new Gson().fromJson(getBodyFromHttpExchange(httpExchange), new TypeToken<JsonModel>() {}.getType());
+            jsonModel = new Gson().fromJson(Converter.getBodyFromHttpExchange(httpExchange), new TypeToken<JsonModel>() {}.getType());
             if (jsonModel == null) throw new Exception();
         } catch (Exception e){
             logger.info("Cannot convert json to model");
@@ -36,17 +34,6 @@ public class SendMessageHandler implements HttpHandler {
         if (telegramBotModelMap == null || !telegramBotModelMap.getState()) http.createResponse(httpExchange, 200, "{\"text\":\"The server is under maintenance\"}");
         else sendMessage(httpExchange, jsonModel.getBot(), jsonModel);
         return;
-    }
-
-    private String getBodyFromHttpExchange(HttpExchange httpExchange) throws IOException {
-        BufferedReader httpInput = new BufferedReader(new InputStreamReader(httpExchange.getRequestBody(), "UTF-8"));
-        String input;
-        StringBuilder in = new StringBuilder();
-        while ((input = httpInput.readLine()) != null) {
-            in.append(input).append(" ");
-        }
-        httpInput.close();
-        return in.toString().trim();
     }
 
     private void sendMessage(HttpExchange httpExchange, String botToken, JsonModel jsonModel) {
