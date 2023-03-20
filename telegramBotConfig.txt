@@ -1,12 +1,12 @@
 {
   "6034973591:AAH5qoOJ1TEfzi7m2iPXw3A_K8auh6FiNZM": {
-    "server": "https://zayavki.konex.com.ua/telegram",
+    "server": "http://10.10.5.173:8082/getUpdates/?bot=6034973591:AAH5qoOJ1TEfzi7m2iPXw3A_K8auh6FiNZM",
     "name": "tester_meters_bot",
     "state": true
   },
-  "6067985401:AAEU8juQByqUsYPluZTy4diE99HempOQm_E": {
-    "server": "https://something/",
-    "name": "meters_bot_bot",
+  "5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10": {
+    "server": "https://meters.konex.com.ua/telegram",
+    "name": "meters_konex_bot",
     "state": true
   }
 }

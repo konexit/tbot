@@ -1,14 +1,17 @@
 package telegram.http;
 
+import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sun.net.httpserver.HttpExchange;
-import telegram.handlers.LoggerHandler;
+import telegram.config.GeneralData;
+import telegram.models.JsonModel;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class HTTP {
 
@@ -18,8 +21,7 @@ public class HTTP {
         if (http == null) http = new HTTP();
         return http;
     }
-
-    private static final Logger logger = Logger.getLogger(LoggerHandler.class.getName());
+    private GeneralData generalData = GeneralData.getInstance();
 
     public HttpResponse postRequestWithToken(String serverURL, String json, String token) {
         HttpResponse response = null;
@@ -30,9 +32,7 @@ public class HTTP {
                     .header("Content-Type", "application/json")
                     .body(json)
                     .asString();
-        } catch (UnirestException e) {
-            logger.info("HTTP: EXCEPTION! sendServerToken()... " + e.getStackTrace());
-        }
+        } catch (UnirestException e) {}
         return response;
     }
 
@@ -44,20 +44,33 @@ public class HTTP {
                     .header("Content-Type", "application/json")
                     .body(json)
                     .asString();
-        } catch (UnirestException e) {
-            logger.info("HTTP: EXCEPTION! sendServer()... " + e.getStackTrace());
-        }
+        } catch (UnirestException e) {}
         return response;
     }
 
     public void createResponse(HttpExchange httpExchange, int code, String json) {
         try {
             httpExchange.sendResponseHeaders(code, json.length());
-            OutputStream os = httpExchange.getResponseBody();
-            os.write(json.getBytes());
-            os.close();
+            OutputStream outputStream = httpExchange.getResponseBody();
+            outputStream.write(json.getBytes());
+            outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public HashMap<String, Object> sendMessage(String botToken, JsonModel jsonModel) {
+        HashMap<String, Object> resp = new HashMap<>();
+        ArrayList<String> chat_id = (ArrayList<String>) jsonModel.getTelegramDispatcher().get("chat_id");
+        chat_id.forEach((String chatId) -> jsonModel.getTelegram().forEach(message -> {
+            message.put("chat_id", chatId);
+            HttpResponse httpResponse = http.postRequest(generalData.getTelegramURL() + "/bot" + botToken + "/sendMessage", new Gson().toJson(message));
+            if (httpResponse == null || httpResponse.getStatus() != 200) {
+                resp.put("code", httpResponse == null ? 500 : httpResponse.getStatus());
+                resp.put("error", httpResponse == null ? "Problem with telegram" : httpResponse.getStatusText());
+            }
+        }));
+        if (!resp.containsKey("code")) resp.put("code", 200);
+        return resp;
     }
 }

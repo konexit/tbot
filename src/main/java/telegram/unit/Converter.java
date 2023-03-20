@@ -18,7 +18,7 @@ public class Converter {
             }
             httpInput.close();
         } catch (IOException e){
-
+            e.printStackTrace();
         }
         return in.toString().trim();
     }

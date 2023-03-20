@@ -6,8 +6,7 @@ public class TelegramBotModel {
     private String name;
     private Boolean state;
 
-    public TelegramBotModel() {
-    }
+    public TelegramBotModel() {}
 
     public String getServer() {
         return server;
