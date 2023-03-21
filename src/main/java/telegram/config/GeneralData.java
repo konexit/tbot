@@ -3,9 +3,12 @@ package telegram.config;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import telegram.http.HTTP;
 import telegram.models.TelegramBotModel;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +32,7 @@ public class GeneralData {
     private String telegramURL;
 
     public void config() {
-        try (InputStream input = new FileInputStream("src\\main\\resources\\application.properties")) {
+        try (InputStream input = new FileInputStream(System.getProperty("user.dir") + File.separator  + "application.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             telegramURL = prop.getProperty("telegram.URL");
@@ -65,9 +68,9 @@ public class GeneralData {
     private String getJsonFromFileTelegramConfig(){
         String fileContent = "";
         try {
-            byte[] bytes = Files.readAllBytes(Paths.get("telegramBotConfig.txt"));
+            byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + File.separator  + "telegramBotConfig.txt"));
             fileContent = new String (bytes);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return fileContent;

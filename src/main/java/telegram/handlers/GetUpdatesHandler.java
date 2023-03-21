@@ -15,7 +15,6 @@ import telegram.models.TelegramBotModel;
 import telegram.unit.Converter;
 
 import java.util.HashMap;
-//import java.util.logging.Logger;
 
 public class GetUpdatesHandler implements HttpHandler {
 
@@ -29,11 +28,6 @@ public class GetUpdatesHandler implements HttpHandler {
         String botToken;
         try {
             botToken = httpExchange.getRequestURI().toString().split("\\?")[1].split("=")[1];
-            for (int i = 0; i < 1000; i++) {
-                logger.error(i + " Test error");
-                logger.info(i + " Test info");
-                logger.debug(i + " Test debug");
-            }
         } catch (Exception e){
             responseFails(httpExchange, "Cannot get bot from parameter");
             return;
@@ -69,7 +63,7 @@ public class GetUpdatesHandler implements HttpHandler {
     }
 
     private void responseFails(HttpExchange httpExchange, String cause){
-//        logger.info(cause);
+        logger.info(cause);
         http.createResponse(httpExchange, 500, "{\"status\": \"failed\", \"error\":" + cause + "}");
     }
 }

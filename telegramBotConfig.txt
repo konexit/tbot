@@ -1,6 +1,6 @@
 {
   "6034973591:AAH5qoOJ1TEfzi7m2iPXw3A_K8auh6FiNZM": {
-    "server": "http://10.10.5.173:8082/getUpdates/?bot=6034973591:AAH5qoOJ1TEfzi7m2iPXw3A_K8auh6FiNZM",
+    "server": "https://zayavki.konex.com.ua/telegram",
     "name": "tester_meters_bot",
     "state": true
   },
