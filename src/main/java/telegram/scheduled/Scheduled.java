@@ -14,8 +14,15 @@
 //        ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
 //
 //        // init Delay = 5, repeat the task every 1 second
-//        ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(task1, 5, 1, TimeUnit.SECONDS);
+//        ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(new Runnable() {
+//            @Override
+//            public void run() {
+//                metersAlertMessge();
+//            }
+//        }, 5, 1, TimeUnit.SECONDS);
+//    }
 //
+//    private void metersAlertMessge(){
 //
 //    }
 //}

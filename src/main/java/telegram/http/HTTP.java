@@ -15,13 +15,14 @@ import java.util.HashMap;
 
 public class HTTP {
 
+    private GeneralData generalData = GeneralData.getInstance();
+
     private static HTTP http;
     private HTTP() {}
     public static HTTP getInstance() {
         if (http == null) http = new HTTP();
         return http;
     }
-    private GeneralData generalData = GeneralData.getInstance();
 
     public HttpResponse postRequestWithToken(String serverURL, String json, String token) {
         HttpResponse response = null;
@@ -48,11 +49,12 @@ public class HTTP {
         return response;
     }
 
-    public void createResponse(HttpExchange httpExchange, int code, String json) {
+    public void createResponse(HttpExchange httpExchange, int statusCode, String json) {
         try {
-            httpExchange.sendResponseHeaders(code, json.length());
+            byte[] body = json.getBytes();
+            httpExchange.sendResponseHeaders(statusCode, body.length);
             OutputStream outputStream = httpExchange.getResponseBody();
-            outputStream.write(json.getBytes());
+            outputStream.write(body);
             outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();

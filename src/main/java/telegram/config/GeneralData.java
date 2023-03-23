@@ -3,8 +3,6 @@ package telegram.config;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import telegram.http.HTTP;
 import telegram.models.TelegramBotModel;
 
@@ -20,6 +18,12 @@ import java.util.Properties;
 
 public class GeneralData {
 
+    private Map<String, TelegramBotModel> listTelegramBot;
+    private String accessToken;
+    private String telegramURL;
+    private String authTokenURL;
+    private String ckEditorCredentials;
+
     private static GeneralData generalData;
     private GeneralData() {}
     public static GeneralData getInstance() {
@@ -27,24 +31,22 @@ public class GeneralData {
         return generalData;
     }
 
-    private Map<String, TelegramBotModel> listTelegramBot;
-    private String accessToken;
-    private String telegramURL;
-
     public void config() {
         try (InputStream input = new FileInputStream(System.getProperty("user.dir") + File.separator  + "application.properties")) {
             Properties prop = new Properties();
             prop.load(input);
             telegramURL = prop.getProperty("telegram.URL");
-            refreshToken(prop.getProperty("AuthToken.URL"), prop.getProperty("ckEditor.Credentials"));
+            authTokenURL = prop.getProperty("AuthToken.URL");
+            ckEditorCredentials = prop.getProperty("ckEditor.Credentials");
+            refreshToken();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         refreshTelegramConfig();
     }
 
-    public void refreshToken(String authTokenURL, String credentials){
-        HttpResponse response = HTTP.getInstance().postRequest(authTokenURL + "/login", credentials);
+    public void refreshToken(){
+        HttpResponse response = HTTP.getInstance().postRequest(this.authTokenURL + "/login", this.ckEditorCredentials);
         Map<String, String> body = new Gson().fromJson(response.getBody().toString(), new TypeToken<HashMap<String, String>>() {}.getType());
         accessToken = body.get("access_token");
     }

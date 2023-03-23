@@ -21,7 +21,6 @@ public class GetUpdatesHandler implements HttpHandler {
 
     private GeneralData generalData = GeneralData.getInstance();
     private HTTP http = HTTP.getInstance();
-
     private static final Logger logger = LogManager.getLogger();
 
     @Override
@@ -40,10 +39,17 @@ public class GetUpdatesHandler implements HttpHandler {
             return;
         }
 
-        HttpResponse httpResponse = http.postRequestWithToken(telegramBotModelMap.getServer(), Converter.getBodyFromHttpExchange(httpExchange), generalData.getAccessToken());
+        String json = Converter.getBodyFromHttpExchange(httpExchange);
+        HttpResponse httpResponse = http.postRequestWithToken(telegramBotModelMap.getServer(), json, generalData.getAccessToken());
         if (httpResponse == null || httpResponse.getStatus() != 200) {
-            responseFails(httpExchange, "Problem in service");
-            return;
+            if (httpResponse.getStatus() == 401) {
+                generalData.refreshToken();
+                httpResponse = http.postRequestWithToken(telegramBotModelMap.getServer(), json, generalData.getAccessToken());
+            }
+            if (httpResponse == null || httpResponse.getStatus() != 200){
+                responseFails(httpExchange, "Problem in service");
+                return;
+            }
         }
 
         JsonModel jsonModel;
