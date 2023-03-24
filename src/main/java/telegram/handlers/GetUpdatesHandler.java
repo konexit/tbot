@@ -19,13 +19,14 @@ import java.util.HashMap;
 
 public class GetUpdatesHandler implements HttpHandler {
 
+    private static final Logger logger = LogManager.getLogger();
     private GeneralData generalData = GeneralData.getInstance();
     private HTTP http = HTTP.getInstance();
-    private static final Logger logger = LogManager.getLogger();
 
     @Override
     public void handle(HttpExchange httpExchange) {
         String botToken;
+
         try {
             botToken = httpExchange.getRequestURI().toString().split("\\?")[1].split("=")[1];
         } catch (Exception e){
@@ -35,28 +36,28 @@ public class GetUpdatesHandler implements HttpHandler {
 
         TelegramBotModel telegramBotModelMap = generalData.getListTelegramBot(botToken);
         if (telegramBotModelMap == null || !telegramBotModelMap.getState()) {
-            responseFails(httpExchange, "The server is under maintenance");
+            responseFails(httpExchange, "The server is under maintenance by BotToken: " + botToken);
             return;
         }
 
         String json = Converter.getBodyFromHttpExchange(httpExchange);
         HttpResponse httpResponse = http.postRequestWithToken(telegramBotModelMap.getServer(), json, generalData.getAccessToken());
-        if (httpResponse == null || httpResponse.getStatus() != 200) {
-            if (httpResponse.getStatus() == 401) {
-                generalData.refreshToken();
-                httpResponse = http.postRequestWithToken(telegramBotModelMap.getServer(), json, generalData.getAccessToken());
-            }
-            if (httpResponse == null || httpResponse.getStatus() != 200){
-                responseFails(httpExchange, "Problem in service");
-                return;
-            }
+
+        if (httpResponse == null || httpResponse.getStatus() == 401) {
+            generalData.refreshToken();
+            httpResponse = http.postRequestWithToken(telegramBotModelMap.getServer(), json, generalData.getAccessToken());
+        }
+
+        if (httpResponse == null || httpResponse.getStatus() != 200){
+            responseFails(httpExchange, "Problem in service: " + telegramBotModelMap.getServer());
+            return;
         }
 
         JsonModel jsonModel;
         try {
             jsonModel = new Gson().fromJson(httpResponse.getBody().toString(), new TypeToken<JsonModel>() {}.getType());
         } catch (JsonSyntaxException e) {
-            responseFails(httpExchange,  e.getMessage());
+            responseFails(httpExchange, e.getMessage());
             return;
         }
 

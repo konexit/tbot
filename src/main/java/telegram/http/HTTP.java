@@ -63,6 +63,10 @@ public class HTTP {
 
     public HashMap<String, Object> sendMessage(String botToken, JsonModel jsonModel) {
         HashMap<String, Object> resp = new HashMap<>();
+        if (!(Boolean) jsonModel.getTelegramDispatcher().get("sendMessage")) {
+            resp.put("code", 200);
+            return resp;
+        }
         ArrayList<String> chat_id = (ArrayList<String>) jsonModel.getTelegramDispatcher().get("chat_id");
         chat_id.forEach((String chatId) -> jsonModel.getTelegram().forEach(message -> {
             message.put("chat_id", chatId);
