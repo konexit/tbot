@@ -1,28 +1,62 @@
-//package telegram.scheduled;
-//
-//
-//import java.util.concurrent.Executors;
-//import java.util.concurrent.ScheduledExecutorService;
-//import java.util.concurrent.ScheduledFuture;
-//import java.util.concurrent.TimeUnit;
-//
-//public class Scheduled {
-//
-//
-//    public static void startScheduled() {
-//
-//        ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
-//
-//        // init Delay = 5, repeat the task every 1 second
-//        ScheduledFuture<?> scheduledFuture = ses.scheduleAtFixedRate(new Runnable() {
-//            @Override
-//            public void run() {
-//                metersAlertMessge();
-//            }
-//        }, 5, 1, TimeUnit.SECONDS);
-//    }
-//
-//    private void metersAlertMessge(){
-//
-//    }
-//}
+package telegram.scheduled;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.quartz.*;
+import org.quartz.impl.StdSchedulerFactory;
+import telegram.config.GeneralData;
+import telegram.models.TelegramBotModel;
+
+import java.util.Map;
+
+public class Scheduled {
+
+    private static final Logger logger = LogManager.getLogger();
+    private GeneralData generalData = GeneralData.getInstance();
+
+    private static Scheduled scheduled;
+    private Scheduled() {}
+    public static synchronized Scheduled getInstance() {
+        if (scheduled == null) scheduled = new Scheduled();
+        return scheduled;
+    }
+
+    public void startJobs() {
+
+        Map<String, TelegramBotModel> telegramBotModelsMap = generalData.getMapTelegramBot();
+
+        if (telegramBotModelsMap != null) {
+            try {
+                Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+                scheduler.start();
+                telegramBotModelsMap.forEach((String botToken, TelegramBotModel telegramBotModel) -> {
+                    if (telegramBotModel.getState() != null && telegramBotModel.getState() && telegramBotModel.getJobsConfig() != null) {
+                        telegramBotModel.getJobsConfig().forEach(job -> {
+                            try {
+                                if (job.get("jobState") != null && (Boolean) job.get("jobState") && job.get("request") != null) {
+                                    JobBuilder jobBuilder = JobBuilder.newJob(SchedulerRequest.class);
+                                    TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger().startNow();
+
+                                    if (job.get("jobName") != null && telegramBotModel.getName() != null){
+                                        jobBuilder.withIdentity((String) job.get("jobName"), telegramBotModel.getName());
+                                        triggerBuilder.withIdentity((String) job.get("jobName"), telegramBotModel.getName());
+                                    }
+
+                                    jobBuilder.usingJobData(new JobDataMap((Map<String, Object>) job.get("request")) {{ put("botToken", botToken);  put("jobName", job.get("jobName")); }});
+
+                                    if (job.get("loopExecute") != null && (Boolean) job.get("loopExecute") && job.get("schedule") != null) triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule((String) job.get("schedule")));
+
+                                    scheduler.scheduleJob(jobBuilder.build(), triggerBuilder.build());
+                                }
+                            } catch (SchedulerException e) {
+                                logger.info("Cannot add job to scheduler exception: " + e.getMessage());
+                            }
+                        });
+                    }
+                });
+            } catch (SchedulerException e) {
+                logger.info("Cannot start Scheduler throw exception: " + e.getMessage());
+            }
+        }
+    }
+}

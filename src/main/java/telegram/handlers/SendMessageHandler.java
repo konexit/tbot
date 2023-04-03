@@ -27,7 +27,7 @@
 //            http.createResponse(httpExchange, 401, "{\"text\":\"Cannot convert json to model\"}");
 //            return;
 //        }
-////        TelegramBotModel telegramBotModelMap = generalData.getListTelegramBot(jsonModel.getBot());
+////        TelegramBotModel telegramBotModelMap = generalData.getMapTelegramBot(jsonModel.getBot());
 ////        if (telegramBotModelMap == null || !telegramBotModelMap.getState()) http.createResponse(httpExchange, 200, "{\"text\":\"The server is under maintenance\"}");
 ////        else {
 //            HashMap<String, Object> respMessage = http.sendMessage(jsonModel.getBot(), jsonModel);

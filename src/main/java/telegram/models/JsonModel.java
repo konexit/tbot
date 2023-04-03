@@ -20,7 +20,4 @@ public class JsonModel {
         this.telegram = telegram;
     }
 
-    public void setTelegramDispatcher(Map<String, Object> telegramDispatcher) {
-        this.telegramDispatcher = telegramDispatcher;
-    }
 }
