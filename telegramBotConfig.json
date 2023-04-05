@@ -1,14 +1,15 @@
 {
   "tasks": {
-    "5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10": {
+    "6034973591:AAH5qoOJ1TEfzi7m2iPXw3A_K8auh6FiNZM": {
       "server": "https://zayavki.konex.com.ua/telegram",
-      "name": "meters_konex_bot",
+      "name": "tester_meters_bot",
       "state": true,
       "jobsConfig": [
         {
-          "schedule": "0/5 * * ? * *",
-          "jobName": "notifyUserToSubmitIndicators",
-          "loopExecute": false,
+          "schedule": "0 0 11 15-19 * *",
+          "jobName": "notify_Users",
+          "jobState": false,
+          "loopExecute": true,
           "request": {
             "method": "POST",
             "serverURL": "https://zayavki.konex.com.ua/telegramUpdates",
@@ -18,9 +19,25 @@
           }
         },
         {
-          "schedule": "0/2 * * ? * *",
-          "jobName": "notifyManagerOfNoNSpecifiedIndicators",
-          "jobState": true,
+          "schedule": "0 0 11 15-19 * *",
+          "jobName": "notify_Manager",
+          "jobState": false,
+          "loopExecute": true,
+          "request": {
+            "method": "POST",
+            "serverURL": "https://zayavki.konex.com.ua/telegramUpdates",
+            "json": {
+              "chatId": [
+                "971483502"
+              ],
+              "action": "managerNotify"
+            }
+          }
+        },
+        {
+          "schedule": "0 0 11 19 * *",
+          "jobName": "notify_Major_Manager",
+          "jobState": false,
           "loopExecute": true,
           "request": {
             "method": "POST",
@@ -35,31 +52,10 @@
         }
       ]
     },
-    "6034973591:AAH5qoOJ1TEfzi7m2iPXw3A_K8auh6FiNZM": {
-      "server": "https://test.vntu.edu.ua/",
-      "name": "tester_meters_bot",
-      "state": false,
-      "jobsConfig": [
-        {
-          "schedule": "0/2 * * * * ?",
-          "jobName": "managerCountersVNTU",
-          "loopExecute": true,
-          "request": {
-            "method": "POST",
-            "serverURL": "https://www.bestchange.com/VNTU",
-            "headers": {
-              "login": "1234",
-              "pass": "12334"
-            },
-            "json": {
-              "chatId": [
-                "971483502"
-              ],
-              "action": "managerCounters"
-            }
-          }
-        }
-      ]
+    "5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10": {
+      "server": "http://10.10.5.173:8082/getUpdates/?bot=5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10",
+      "name": "meters_konex_bot",
+      "state": true
     }
   }
 }

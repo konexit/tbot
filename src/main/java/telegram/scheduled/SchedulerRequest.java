@@ -23,9 +23,6 @@ public class SchedulerRequest implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        System.out.println("--------------------------------------------");
-        System.out.println("Job Name: " + context.getJobDetail().getJobDataMap().get("jobName"));
-        System.out.println("============================================");
 
         JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 
@@ -45,7 +42,7 @@ public class SchedulerRequest implements Job {
         try {
             jsonModel = new Gson().fromJson(httpResponse.getBody().toString(), new TypeToken<JsonModel>() {}.getType());
         } catch (JsonSyntaxException e) {
-            logger.info(e.getMessage());
+            logger.info("Cannot convert response json to jsonModel EXCEPTION: " + e.getMessage());
             return;
         }
 

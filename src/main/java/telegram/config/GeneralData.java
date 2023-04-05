@@ -26,10 +26,10 @@ public class GeneralData {
 
     private static final Logger logger = LogManager.getLogger();
     private Map<String, TelegramBotModel> mapTelegramBot = new HashMap<>();
-    private String accessToken;
-    private String telegramURL;
-    private String authTokenURL;
-    private String ckEditorCredentials;
+    private String accessToken = "";
+    private String telegramURL = "";
+    private String authTokenURL = "";
+    private String ckEditorCredentials = "";
 
     private static GeneralData generalData;
     private GeneralData() {}
@@ -47,15 +47,23 @@ public class GeneralData {
             ckEditorCredentials = prop.getProperty("ckEditor.Credentials");
             init();
         } catch (IOException ex) {
-            logger.info("Problem with application.properties file");
+            logger.fatal("Problem with application.properties file");
         }
     }
 
-
     public void refreshToken(){
         HttpResponse response = HTTP.getInstance().postRequest(this.authTokenURL + "/login", this.ckEditorCredentials);
-        Map<String, String> body = new Gson().fromJson(response.getBody().toString(), new TypeToken<HashMap<String, String>>() {}.getType());
-        accessToken = body.get("access_token");
+
+        if (response == null || response.getStatus() != 200) {
+            logger.info("Problem with authorization service");
+        }
+
+        try {
+            Map<String, String> body = new Gson().fromJson(response.getBody().toString(), new TypeToken<HashMap<String, String>>() {}.getType());
+            accessToken = body.get("access_token");
+        } catch (Exception e){
+            logger.error("Problem with json from authorization service");
+        }
     }
 
     public void refreshTelegramConfig() {
@@ -89,17 +97,17 @@ public class GeneralData {
         try {
             telegramConfig = mapper.readValue(getJsonFromFileTelegramConfig(), JsonNode.class);
         } catch (JsonProcessingException e) {
-            logger.info("Cannot convert json in telegramBotConfig file");
+            logger.warn("Cannot convert json in telegramBotConfig file");
         }
 
         if (telegramConfig != null && telegramConfig.get("tasks") != null) {
             try {
                 mapTelegramBot = mapper.convertValue(telegramConfig.get("tasks"),  new TypeReference<HashMap<String, TelegramBotModel>>(){});
             } catch (Exception e){
-                logger.info("Cannot convert json of tasks");
+                logger.warn("Cannot convert json of tasks");
             }
         } else {
-            logger.info("Cannot find key task in telegramBotConfig file");
+            logger.warn("Cannot find key task in telegramBotConfig file");
         }
     }
 
@@ -110,7 +118,7 @@ public class GeneralData {
             byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + File.separator  + "telegramBotConfig.json"));
             fileContent = new String (bytes);
         } catch (Exception e) {
-            logger.info("Cannot read file telegramBotConfig");
+            logger.fatal("Cannot read file telegramBotConfig");
         }
         return fileContent;
     }

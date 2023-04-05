@@ -25,15 +25,15 @@ public class Scheduled {
 
         Map<String, TelegramBotModel> telegramBotModelsMap = generalData.getMapTelegramBot();
 
-        if (telegramBotModelsMap != null) {
+        if (telegramBotModelsMap != null && telegramBotModelsMap.size() > 0) {
             try {
                 Scheduler scheduler = new StdSchedulerFactory().getScheduler();
                 scheduler.start();
                 telegramBotModelsMap.forEach((String botToken, TelegramBotModel telegramBotModel) -> {
                     if (telegramBotModel.getState() != null && telegramBotModel.getState() && telegramBotModel.getJobsConfig() != null) {
                         telegramBotModel.getJobsConfig().forEach(job -> {
-                            try {
-                                if (job.get("jobState") != null && (Boolean) job.get("jobState") && job.get("request") != null) {
+                            if (job.get("jobState") != null && (Boolean) job.get("jobState") && job.get("request") != null) {
+                                try {
                                     JobBuilder jobBuilder = JobBuilder.newJob(SchedulerRequest.class);
                                     TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger().startNow();
 
@@ -47,15 +47,15 @@ public class Scheduled {
                                     if (job.get("loopExecute") != null && (Boolean) job.get("loopExecute") && job.get("schedule") != null) triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule((String) job.get("schedule")));
 
                                     scheduler.scheduleJob(jobBuilder.build(), triggerBuilder.build());
+                                } catch (Exception e) {
+                                    logger.warn("Cannot add job to scheduler EXCEPTION: " + e.getMessage());
                                 }
-                            } catch (SchedulerException e) {
-                                logger.info("Cannot add job to scheduler exception: " + e.getMessage());
                             }
                         });
                     }
                 });
             } catch (SchedulerException e) {
-                logger.info("Cannot start Scheduler throw exception: " + e.getMessage());
+                logger.error("Cannot start Scheduler EXCEPTION: " + e.getMessage());
             }
         }
     }

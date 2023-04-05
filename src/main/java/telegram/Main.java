@@ -16,11 +16,11 @@ public class Main {
         GeneralData.getInstance().config();
         ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress("10.10.5.173", 8082), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress("10.10.5.173", 8081), 0);
             server.createContext("/getUpdates/", new GetUpdatesHandler());
             server.setExecutor(threadPoolExecutor);
             server.start();
-            System.out.println("Start TEST version 10.10.5.173 on 8082");
+            System.out.println("Start PROD version 10.10.5.173 on 8081");
             Scheduled.getInstance().startJobs();
         } catch (IOException e) {
             e.printStackTrace();

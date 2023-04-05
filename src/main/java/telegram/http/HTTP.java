@@ -5,6 +5,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sun.net.httpserver.HttpExchange;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
 import telegram.config.GeneralData;
 import telegram.models.JsonModel;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 public class HTTP {
 
+    private static final Logger logger = LogManager.getLogger();
     private GeneralData generalData = GeneralData.getInstance();
 
     private static HTTP http;
@@ -35,20 +38,9 @@ public class HTTP {
                     .header("Content-Type", "application/json")
                     .body(json)
                     .asString();
-        } catch (UnirestException e) {}
-        return response;
-    }
-
-    public HttpResponse request(String serverURL, String method, String json) {
-        HttpResponse response = null;
-        try {
-            response = Unirest.post(serverURL)
-                    .header("Accept", "application/json")
-                    .header("Authorization", "Bearer " + generalData.getTelegramURL())
-                    .header("Content-Type", "application/json")
-                    .body(json)
-                    .asString();
-        } catch (UnirestException e) {}
+        } catch (UnirestException e) {
+            logger.info("Error post request with token: " + serverURL + "  EXCEPTION:" + e.getMessage());
+        }
         return response;
     }
 
@@ -60,7 +52,9 @@ public class HTTP {
                     .header("Content-Type", "application/json")
                     .body(json)
                     .asString();
-        } catch (UnirestException e) {}
+        } catch (UnirestException e) {
+            logger.info("Error post request: " + serverURL + "  EXCEPTION:" + e.getMessage());
+        }
         return response;
     }
 
@@ -72,7 +66,7 @@ public class HTTP {
             outputStream.write(body);
             outputStream.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warn("Cannot create response EXCEPTION: " + e.getMessage());
         }
     }
 
@@ -82,7 +76,12 @@ public class HTTP {
             resp.put("code", 200);
             return resp;
         }
-        ArrayList<String> chat_id = (ArrayList<String>) jsonModel.getTelegramDispatcher().get("chat_id");
+        ArrayList<String> chat_id = null;
+        try {
+            chat_id = (ArrayList<String>) jsonModel.getTelegramDispatcher().get("chat_id");
+        } catch (Exception e){
+            logger.warn("Problem with json from server to get chat_id");
+        }
         if (chat_id != null) {
             chat_id.forEach((String chatId) -> jsonModel.getTelegram().forEach(message -> {
                 message.put("chat_id", chatId);
@@ -110,8 +109,8 @@ public class HTTP {
                 String json = jobDataMap.get("json") != null ? new Gson().toJson(jobDataMap.get("json")).toString() : "{}";
                 response = Unirest.post(jobDataMap.getString("serverURL")).headers(headers).body(json).asString();}
             else response = Unirest.get(jobDataMap.getString("serverURL")).headers(headers).asString();
-        } catch (UnirestException e) {
-            System.out.println("SchedulerRequest:  EXCEPTION! " + e.getStackTrace()) ;
+        } catch (Exception e) {
+            logger.warn("SchedulerRequest:  EXCEPTION! " + e.getMessage());
         }
 
         return response;
