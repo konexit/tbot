@@ -8,7 +8,7 @@
         {
           "schedule": "0 0 11 15-19 * *",
           "jobName": "notify_Users",
-          "jobState": false,
+          "jobState": true,
           "loopExecute": true,
           "request": {
             "method": "POST",
@@ -21,7 +21,7 @@
         {
           "schedule": "0 0 11 15-19 * *",
           "jobName": "notify_Manager",
-          "jobState": false,
+          "jobState": true,
           "loopExecute": true,
           "request": {
             "method": "POST",
@@ -37,7 +37,7 @@
         {
           "schedule": "0 0 11 19 * *",
           "jobName": "notify_Major_Manager",
-          "jobState": false,
+          "jobState": true,
           "loopExecute": true,
           "request": {
             "method": "POST",

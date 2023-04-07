@@ -37,16 +37,17 @@ public class Scheduled {
                                     JobBuilder jobBuilder = JobBuilder.newJob(SchedulerRequest.class);
                                     TriggerBuilder triggerBuilder = TriggerBuilder.newTrigger().startNow();
 
-                                    if (job.get("jobName") != null && telegramBotModel.getName() != null){
-                                        jobBuilder.withIdentity((String) job.get("jobName"), telegramBotModel.getName());
-                                        triggerBuilder.withIdentity((String) job.get("jobName"), telegramBotModel.getName());
-                                    }
+//                                    if (job.get("jobName") != null && telegramBotModel.getName() != null){
+//                                        jobBuilder.withIdentity((String) job.get("jobName"), telegramBotModel.getName());
+//                                        triggerBuilder.withIdentity((String) job.get("jobName"), telegramBotModel.getName());
+//                                    }
 
                                     jobBuilder.usingJobData(new JobDataMap((Map<String, Object>) job.get("request")) {{ put("botToken", botToken);  put("jobName", job.get("jobName")); }});
 
                                     if (job.get("loopExecute") != null && (Boolean) job.get("loopExecute") && job.get("schedule") != null) triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule((String) job.get("schedule")));
 
                                     scheduler.scheduleJob(jobBuilder.build(), triggerBuilder.build());
+                                    System.out.println("add job ");
                                 } catch (Exception e) {
                                     logger.warn("Cannot add job to scheduler EXCEPTION: " + e.getMessage());
                                 }
