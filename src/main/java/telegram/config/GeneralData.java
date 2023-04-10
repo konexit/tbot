@@ -52,7 +52,7 @@ public class GeneralData {
             authTokenURL = prop.getProperty("AuthToken.URL");
             ckEditorCredentials = prop.getProperty("ckEditor.Credentials");
             init();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             logger.fatal("Problem with application.properties file");
         }
     }

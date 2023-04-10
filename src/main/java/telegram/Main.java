@@ -1,6 +1,8 @@
 package telegram;
 
 import com.sun.net.httpserver.HttpServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import telegram.config.GeneralData;
 import telegram.handlers.GetUpdatesHandler;
 import telegram.scheduled.Scheduled;
@@ -12,6 +14,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main {
 
+    private static final Logger logger = LogManager.getLogger();
 
     public static void main(String[] args)  {
         GeneralData generalData = GeneralData.getInstance();
@@ -24,8 +27,8 @@ public class Main {
             server.start();
             System.out.println("Start PROD version " + generalData.getDomain() + " on " + generalData.getServerPort());
             Scheduled.getInstance().startJobs();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.fatal("Cannot start server EXCEPTION: " + e.getMessage());
         }
     }
 }
