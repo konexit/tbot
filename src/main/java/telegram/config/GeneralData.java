@@ -26,6 +26,9 @@ public class GeneralData {
 
     private static final Logger logger = LogManager.getLogger();
     private Map<String, TelegramBotModel> mapTelegramBot = new HashMap<>();
+    private String domain = "";
+    private int serverPort;
+    private int schedulerCountTreads;
     private String accessToken = "";
     private String telegramURL = "";
     private String authTokenURL = "";
@@ -42,6 +45,9 @@ public class GeneralData {
         try (InputStream input = new FileInputStream(System.getProperty("user.dir") + File.separator  + "application.properties")) {
             Properties prop = new Properties();
             prop.load(input);
+            domain = prop.getProperty("domain");
+            serverPort = Integer.parseInt(prop.getProperty("server.port"));
+            schedulerCountTreads = Integer.parseInt(prop.getProperty("scheduler.countTreads"));
             telegramURL = prop.getProperty("telegram.URL");
             authTokenURL = prop.getProperty("AuthToken.URL");
             ckEditorCredentials = prop.getProperty("ckEditor.Credentials");
@@ -84,6 +90,18 @@ public class GeneralData {
 
     public String getAccessToken() {
         return accessToken;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    public int getSchedulerCountTreads() {
+        return schedulerCountTreads;
     }
 
     private void init(){

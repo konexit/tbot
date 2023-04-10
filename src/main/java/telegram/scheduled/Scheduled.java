@@ -47,7 +47,6 @@ public class Scheduled {
                                     if (job.get("loopExecute") != null && (Boolean) job.get("loopExecute") && job.get("schedule") != null) triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule((String) job.get("schedule")));
 
                                     scheduler.scheduleJob(jobBuilder.build(), triggerBuilder.build());
-                                    System.out.println("add job ");
                                 } catch (Exception e) {
                                     logger.warn("Cannot add job to scheduler EXCEPTION: " + e.getMessage());
                                 }

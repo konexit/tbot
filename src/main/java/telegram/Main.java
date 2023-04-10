@@ -12,15 +12,17 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class Main {
 
+
     public static void main(String[] args)  {
-        GeneralData.getInstance().config();
-        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+        GeneralData generalData = GeneralData.getInstance();
+        generalData.config();
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress("10.10.5.173", 8081), 0);
+            ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(generalData.getSchedulerCountTreads());
+            HttpServer server = HttpServer.create(new InetSocketAddress(generalData.getDomain(), generalData.getServerPort()), 0);
             server.createContext("/getUpdates/", new GetUpdatesHandler());
             server.setExecutor(threadPoolExecutor);
             server.start();
-            System.out.println("Start PROD version 10.10.5.173 on 8081");
+            System.out.println("Start PROD version " + generalData.getDomain() + " on " + generalData.getServerPort());
             Scheduled.getInstance().startJobs();
         } catch (IOException e) {
             e.printStackTrace();
