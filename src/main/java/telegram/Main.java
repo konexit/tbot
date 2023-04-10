@@ -17,7 +17,7 @@ public class Main {
         GeneralData generalData = GeneralData.getInstance();
         generalData.config();
         try {
-            ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(generalData.getSchedulerCountTreads());
+            ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(generalData.getSchedulerThreadCount());
             HttpServer server = HttpServer.create(new InetSocketAddress(generalData.getDomain(), generalData.getServerPort()), 0);
             server.createContext("/getUpdates/", new GetUpdatesHandler());
             server.setExecutor(threadPoolExecutor);

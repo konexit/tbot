@@ -28,7 +28,7 @@ public class GeneralData {
     private Map<String, TelegramBotModel> mapTelegramBot = new HashMap<>();
     private String domain = "";
     private int serverPort;
-    private int schedulerCountTreads;
+    private int schedulerThreadCount;
     private String accessToken = "";
     private String telegramURL = "";
     private String authTokenURL = "";
@@ -47,7 +47,7 @@ public class GeneralData {
             prop.load(input);
             domain = prop.getProperty("domain");
             serverPort = Integer.parseInt(prop.getProperty("server.port"));
-            schedulerCountTreads = Integer.parseInt(prop.getProperty("scheduler.countTreads"));
+            schedulerThreadCount = Integer.parseInt(prop.getProperty("scheduler.threadCount"));
             telegramURL = prop.getProperty("telegram.URL");
             authTokenURL = prop.getProperty("AuthToken.URL");
             ckEditorCredentials = prop.getProperty("ckEditor.Credentials");
@@ -100,8 +100,8 @@ public class GeneralData {
         return serverPort;
     }
 
-    public int getSchedulerCountTreads() {
-        return schedulerCountTreads;
+    public int getSchedulerThreadCount() {
+        return schedulerThreadCount;
     }
 
     private void init(){
