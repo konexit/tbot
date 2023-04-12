@@ -1,0 +1,42 @@
+{
+  "telegram": {
+    "5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10": {
+      "server": "https://zayavki.konex.com.ua/telegram",
+      "name": "meters_konex_bot",
+      "state": true,
+      "jobsConfig": [
+        {
+          "schedule": "0 0 11 15-19 * ? *",
+          "jobName": "notify_Users",
+          "jobState": true,
+          "loopExecute": false,
+          "className": "telegram.scheduled.SchedulerRequest",
+          "request": {
+            "method": "POST",
+            "serverURL": "https://zayavki.konex.com.ua/telegramUdates",
+            "json": {
+              "action": "userNotify"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "system": {
+    "jobsConfig": [
+      {
+        "schedule": "0 5 * * * ? *",
+        "jobName": "ping_Communication_Channel",
+        "jobState": true,
+        "loopExecute": true,
+        "className": "telegram.scheduled.PingWebHookAddress",
+        "request": {
+          "ipAddresses": [
+            "81.30.170.206",
+            "77.222.132.58"
+          ]
+        }
+      }
+    ]
+  }
+}

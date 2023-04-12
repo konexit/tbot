@@ -16,7 +16,6 @@ import telegram.unit.Converter;
 
 import java.util.HashMap;
 
-
 public class GetUpdatesHandler implements HttpHandler {
 
     private static final Logger logger = LogManager.getLogger();
@@ -30,13 +29,13 @@ public class GetUpdatesHandler implements HttpHandler {
         try {
             botToken = httpExchange.getRequestURI().toString().split("\\?")[1].split("=")[1];
         } catch (Exception e){
-            responseFails(httpExchange, "Cannot get bot from parameter");
+            responseFails(httpExchange, "Cannot get bot from parameter", "info");
             return;
         }
 
-        TelegramBotModel telegramBotModelMap = generalData.getListTelegramBot(botToken);
+        TelegramBotModel telegramBotModelMap = generalData.getTelegramBot(botToken);
         if (telegramBotModelMap == null || !telegramBotModelMap.getState()) {
-            responseFails(httpExchange, "The server is under maintenance by BotToken: " + botToken);
+            responseFails(httpExchange, "info", "The server is under maintenance by BotToken: " + botToken);
             return;
         }
 
@@ -49,7 +48,7 @@ public class GetUpdatesHandler implements HttpHandler {
         }
 
         if (httpResponse == null || httpResponse.getStatus() != 200){
-            responseFails(httpExchange, "Problem in service: " + telegramBotModelMap.getServer());
+            responseFails(httpExchange, "info", "Problem in service: " + telegramBotModelMap.getServer());
             return;
         }
 
@@ -57,21 +56,24 @@ public class GetUpdatesHandler implements HttpHandler {
         try {
             jsonModel = new Gson().fromJson(httpResponse.getBody().toString(), new TypeToken<JsonModel>() {}.getType());
         } catch (JsonSyntaxException e) {
-            responseFails(httpExchange, e.getMessage());
+            responseFails(httpExchange, "warn", "Cannot convert response json to jsonModel EXCEPTION: " + e.getMessage());
             return;
         }
 
         HashMap<String, Object> respMessage = http.sendMessage(botToken, jsonModel);
         if ((Integer)respMessage.get("code") != 200) {
-            responseFails(httpExchange, respMessage.get("error").toString());
+            responseFails(httpExchange, "info", respMessage.get("error").toString());
             return;
         }
 
         http.createResponse(httpExchange, 200, "{\"status\":\"Success send to server \"}");
     }
 
-    private void responseFails(HttpExchange httpExchange, String cause){
-        logger.info(cause);
+    private void responseFails(HttpExchange httpExchange, String level, String cause) {
+        switch (level) {
+            case "info": logger.info(cause);
+            case "warn": logger.warn(cause);
+        }
         http.createResponse(httpExchange, 500, "{\"status\": \"failed\", \"error\":" + cause + "}");
     }
 }
