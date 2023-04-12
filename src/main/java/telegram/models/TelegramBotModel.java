@@ -8,7 +8,7 @@ public class TelegramBotModel {
     private String server;
     private String name;
     private Boolean state;
-    private List<Map<String, Object>> jobsConfig;
+    private List<ScheduledJobModel> jobsConfig;
 
     public TelegramBotModel() {}
 
@@ -24,7 +24,7 @@ public class TelegramBotModel {
         return state;
     }
 
-    public List<Map<String, Object>> getJobsConfig() {
+    public List<ScheduledJobModel> getJobsConfig() {
         return jobsConfig;
     }
 }

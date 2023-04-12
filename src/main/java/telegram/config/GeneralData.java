@@ -10,29 +10,30 @@ import com.mashape.unirest.http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import telegram.http.HTTP;
+import telegram.models.ScheduledJobModel;
 import telegram.models.TelegramBotModel;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class GeneralData {
 
     private static final Logger logger = LogManager.getLogger();
     private Map<String, TelegramBotModel> mapTelegramBot = new HashMap<>();
+    private Map<String, Object> system = new HashMap<>();
     private String domain = "";
     private int serverPort;
     private int schedulerThreadCount;
     private String accessToken = "";
     private String telegramURL = "";
     private String authTokenURL = "";
+    private String activeWebHookIP = "";
     private String ckEditorCredentials = "";
+
 
     private static GeneralData generalData;
     private GeneralData() {}
@@ -73,11 +74,25 @@ public class GeneralData {
     }
 
     public void refreshTelegramConfig() {
-        getTasksFromConfigFile();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode telegramConfig = null;
+        try {
+            telegramConfig = mapper.readValue(getJsonFromFileTelegramConfig(), JsonNode.class);
+        } catch (JsonProcessingException e) {
+            logger.warn("Cannot convert json in telegramBotConfig file");
+        }
+        if (telegramConfig != null ) {
+            getTelegramJobs(telegramConfig);
+            getSystemJobs(telegramConfig);
+        } else logger.warn("TelegramBotConfig file is empty");
     }
 
     public TelegramBotModel getTelegramBot(String tokenBot) {
         return mapTelegramBot.get(tokenBot);
+    }
+
+    public Map<String, Object> getSystem() {
+        return system;
     }
 
     public Map<String, TelegramBotModel> getMapTelegramBot() {
@@ -100,6 +115,14 @@ public class GeneralData {
         return serverPort;
     }
 
+    public String getActiveWebHookIP() {
+        return activeWebHookIP;
+    }
+
+    public void setActiveWebHookIP(String activeWebHookIP) {
+        this.activeWebHookIP = activeWebHookIP;
+    }
+
     public int getSchedulerThreadCount() {
         return schedulerThreadCount;
     }
@@ -109,26 +132,32 @@ public class GeneralData {
         refreshTelegramConfig();
     }
 
-    private void getTasksFromConfigFile(){
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode telegramConfig = null;
-        try {
-            telegramConfig = mapper.readValue(getJsonFromFileTelegramConfig(), JsonNode.class);
-        } catch (JsonProcessingException e) {
-            logger.warn("Cannot convert json in telegramBotConfig file");
-        }
 
-        if (telegramConfig != null && telegramConfig.get("tasks") != null) {
+    private void getTelegramJobs(JsonNode telegramConfig){
+        ObjectMapper mapper = new ObjectMapper();
+        if (telegramConfig.get("telegram") != null) {
             try {
-                mapTelegramBot = mapper.convertValue(telegramConfig.get("tasks"),  new TypeReference<HashMap<String, TelegramBotModel>>(){});
+                mapTelegramBot = mapper.convertValue(telegramConfig.get("telegram"),  new TypeReference<HashMap<String, TelegramBotModel>>(){});
             } catch (Exception e){
-                logger.warn("Cannot convert json of tasks");
+                logger.warn("Cannot convert json of telegram from telegramBotConfig file");
             }
         } else {
-            logger.warn("Cannot find key task in telegramBotConfig file");
+            logger.warn("Cannot find key telegram in telegramBotConfig file");
         }
     }
 
+    private void getSystemJobs(JsonNode telegramConfig){
+        ObjectMapper mapper = new ObjectMapper();
+        if (telegramConfig.get("system") != null) {
+            try {
+                system = mapper.convertValue(telegramConfig.get("system"),  new TypeReference<HashMap<String, Object>>(){});
+            } catch (Exception e){
+                logger.warn("Cannot convert json of systemJobs from telegramBotConfig file");
+            }
+        } else {
+            logger.warn("Cannot find key systemJobs in telegramBotConfig file");
+        }
+    }
 
     private String getJsonFromFileTelegramConfig(){
         String fileContent = "";
@@ -140,4 +169,12 @@ public class GeneralData {
         }
         return fileContent;
     }
+
+//    private void pingCommunicationChannel(String cron, String ipAddresses) {
+//        SchedulerManager schedulerManager = new SchedulerManager();
+//        Properties properties = new Properties();
+//        properties.setProperty("org.quartz.threadPool.threadCount", "1");
+//        schedulerManager.createScheduler(properties, new PingWebHookAddress(), true,  cron,
+//                new HashMap<String, Object>() {{ put("ipAddresses", new LinkedList<>(Arrays.asList(ipAddresses.split(", ")))); }});
+//    }
 }
