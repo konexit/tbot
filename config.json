@@ -9,11 +9,11 @@
           "schedule": "0 0 11 15-19 * ? *",
           "jobName": "notify_Users",
           "jobState": true,
-          "loopExecute": false,
-          "className": "telegram.scheduled.SchedulerRequest",
+          "loopExecute": true,
+          "className": "dispatcher.telegramAPI.services.TelegramJob",
           "request": {
             "method": "POST",
-            "serverURL": "https://zayavki.konex.com.ua/telegramUdates",
+            "serverURL": "https://zayavki.konex.com.ua/telegramUpdates",
             "json": {
               "action": "userNotify"
             }
@@ -28,8 +28,8 @@
         "schedule": "0 5 * * * ? *",
         "jobName": "ping_Communication_Channel",
         "jobState": true,
-        "loopExecute": true,
-        "className": "telegram.scheduled.PingWebHookAddress",
+        "loopExecute": false,
+        "className": "dispatcher.system.services.PingCommunicationChannelJob",
         "request": {
           "ipAddresses": [
             "81.30.170.206",
