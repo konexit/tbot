@@ -76,12 +76,15 @@ public class ScheduledService {
     public String getInfoJobs(){
         String json = "{}";
         try {
-            Map<String, Object> dataGroup = new HashMap<>();
+
+            List<Map<String, Object>> jobsList = new LinkedList<>();
             for (String groupName : scheduler.getJobGroupNames()) {
+                Map<String, Object> jobMap = new HashMap<>();
 
-                List<Map<String, Object>> jobs = new LinkedList<>();
+                jobMap.put("jobGroup", groupName);
+
+                List<Map<String, Object>> jobsConfig = new LinkedList<>();
                 for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-
                     Map<String, Object> job = new HashMap<>();
                     List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
                     Trigger trigger = triggers.get(0);
@@ -93,18 +96,19 @@ public class ScheduledService {
                     job.put("previousFireTime", trigger.getPreviousFireTime() != null ? trigger.getPreviousFireTime() : 0);
                     job.put("priority", trigger.getPriority());
                     job.put("timesTriggered", (trigger instanceof SimpleTriggerImpl) ? ((SimpleTriggerImpl) trigger).getTimesTriggered() : 0);
-                    jobs.add(job);
+                    jobsConfig.add(job);
                 }
 
-                dataGroup.put(groupName, jobs);
+                jobMap.put("jobConfig", jobsConfig);
+                jobsList.add(jobMap);
             }
 
-            json = Converter.convertObjectToJson(dataGroup);
-
-            if (json == null) {
+            if (jobsList.size() == 0) {
                 logger.warn("Cannot convert object of jobs to json");
-                json = "{}";
+                return "{\"jobs\": []}";
             }
+
+            json = Converter.convertObjectToJson( new HashMap<String, Object>(){{ put("jobs", jobsList); }});
 
         } catch (Exception e) {
             logger.warn("Cannot get info jobs from scheduler EXCEPTION: " + e.getMessage());

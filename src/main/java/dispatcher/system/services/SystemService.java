@@ -10,9 +10,6 @@ import dispatcher.unit.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -55,20 +52,9 @@ public class SystemService {
     }
 
     public JsonNode getConfigFile(){
-        JsonNode config = Converter.convertStringToJsonNode(getJsonFromFileConfig());
+        JsonNode config = (JsonNode) Converter.convertStringToSpecificObject(Converter.getTextFromFileInProjectDir("config.json"), JsonNode.class);
         if (config == null) logger.warn("Cannot convert json config file to jsonNode");
         return config;
-    }
-
-    private String getJsonFromFileConfig(){
-        String fileContent = "";
-        try {
-            byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + File.separator  + "config.json"));
-            fileContent = new String (bytes);
-        } catch (Exception e) {
-            logger.fatal("Cannot read file telegramBotConfig");
-        }
-        return fileContent;
     }
 
 }

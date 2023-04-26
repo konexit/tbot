@@ -12,6 +12,7 @@ import org.quartz.JobDataMap;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HTTP {
@@ -87,9 +88,11 @@ public class HTTP {
         return response;
     }
 
-    public void createResponse(HttpExchange httpExchange, int statusCode, String json) {
+    public void createResponse(HttpExchange httpExchange, int statusCode, String json, Map<String, List<String>> headers) {
         try {
             byte[] body = json.getBytes();
+            if (headers == null) httpExchange.getResponseHeaders().set("Content-Type", "application/json");
+            else httpExchange.getResponseHeaders().putAll(headers);
             httpExchange.sendResponseHeaders(statusCode, body.length);
             OutputStream outputStream = httpExchange.getResponseBody();
             outputStream.write(body);
@@ -97,5 +100,13 @@ public class HTTP {
         } catch (IOException e) {
             logger.warn("Cannot create response EXCEPTION: " + e.getMessage());
         }
+    }
+
+    public void createResponseWithLog(HttpExchange httpExchange, String level, int statusCode, String cause, Map<String, List<String>> headers) {
+        switch (level) {
+            case "info": logger.info(cause);
+            case "warn": logger.warn(cause);
+        }
+        createResponse(httpExchange, statusCode, "{\"status\": \"failed\", \"error\": \"" + cause + "\"}", headers);
     }
 }

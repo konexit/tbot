@@ -1,0 +1,305 @@
+{
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a dispatcher server.",
+    "title": "Dispatcher Swagger API",
+    "contact": {
+      "name": "Dispatcher Support"
+    },
+    "version": "1.0"
+  },
+  "host": "10.10.5.173:8082",
+  "basePath": "/",
+  "paths": {
+    "/telegramBotStatusWebHook/": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Telegram"
+        ],
+        "summary": "Інформація бота на веб хуку.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Назва бота",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.botInfoWebHook"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/response.botInfoWebHook"
+            }
+          }
+        }
+      }
+    },
+    "/addJob/": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Scheduler"
+        ],
+        "summary": "Добавлення новії роботи в scheduler.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Конфігурація роботи",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.addJob"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Success added job"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/infoJobs/": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Scheduler"
+        ],
+        "summary": "Інформація робот в scheduler.",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/deleteJob/": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Scheduler"
+        ],
+        "summary": "Видалення роботи із scheduler.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Конфігурація роботи",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.removeJob"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "Success deleted job"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "request.botInfoWebHook": {
+      "type": "object",
+      "properties": {
+        "botName": {
+          "type": "string",
+          "example": "meters_konex_bot"
+        }
+      }
+    },
+    "response.botInfoWebHook": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "boolean"
+        },
+        "pending_update_count": {
+          "type": "integer"
+        }
+      }
+    },
+    "request.addJob": {
+      "type": "object",
+      "properties": {
+        "jobGroup": {
+          "type": "string",
+          "example": "system"
+        },
+        "jobsConfig": {
+          "type": "object",
+          "properties": {
+            "schedule": {
+              "type": "string",
+              "example": "0 0 10 15-19 * ? *"
+            },
+            "jobName": {
+              "type": "string",
+              "example": "notify_Test"
+            },
+            "jobState": {
+              "type": "boolean",
+              "example": true
+            },
+            "loopExecute": {
+              "type": "boolean",
+              "example": true
+            },
+            "className": {
+              "type": "string",
+              "example": "dispatcher.telegramAPI.services.TelegramJob"
+            }
+          }
+        },
+        "requestData": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string",
+              "example": "POST"
+            },
+            "serverURL": {
+              "type": "string",
+              "example": "https://zayavki.konex.com.ua/telegramUpdates"
+            },
+            "json": {
+              "type": "object"
+            }
+          }
+        }
+      }
+    },
+    "response.addJob": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "ok"
+        }
+      }
+    },
+    "response.infoJob": {
+      "type": "object",
+      "properties": {
+        "jobs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "jobGroup": {
+                "type": "string",
+                "example": "system"
+              },
+              "jobConfig": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "jobName": {
+                      "type": "string",
+                      "example": "notify_Test"
+                    },
+                    "schedule": {
+                      "type": "string",
+                      "example": "0 0 10 15-19 * ? *"
+                    },
+                    "nextFireTime": {
+                      "type": "integer",
+                      "example": 1684134000000
+                    },
+                    "startTime": {
+                      "type": "integer",
+                      "example": 1682507194000
+                    },
+                    "previousFireTime": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "endTime": {
+                      "type": "integer",
+                      "example": 0
+                    },
+                    "priority": {
+                      "type": "integer",
+                      "example": 5
+                    },
+                    "timesTriggered": {
+                      "type": "integer",
+                      "example": 0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "request.removeJob": {
+      "type": "object",
+      "properties": {
+        "groupName": {
+          "type": "string",
+          "example": "system"
+        },
+        "jobName": {
+          "type": "string",
+          "example": "notify_Test"
+        }
+      }
+    }
+  }
+}
