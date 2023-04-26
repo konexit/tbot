@@ -17,6 +17,7 @@ public class SwaggerHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) {
         String swaggerPage = Converter.getTextFromFileInProjectDir("swaggerResources/swagger.html");
+
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", new LinkedList<String>() {{ add("text/html; charset=utf-8"); } });
         http.createResponse(httpExchange, 200, swaggerPage, headers);

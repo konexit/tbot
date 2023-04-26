@@ -45,7 +45,7 @@ public class TelegramBotStatusWebHook implements HttpHandler {
         HttpResponse httpResponse = http.getRequest( telegramConfig.getPropertiesByKey("telegramURL") +
                                                                 "/bot" + botToken + "/getWebhookInfo");
         if (httpResponse == null || httpResponse.getStatus() != 200) {
-            http.createResponseWithLog(httpExchange, "info", 500, httpResponse.getStatusText(), null);
+            http.createResponseWithLog(httpExchange, "info", 500, "Problem with telegram to get getWebhookInfo", null);
             return;
         }
 

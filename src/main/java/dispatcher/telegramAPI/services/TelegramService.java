@@ -43,8 +43,8 @@ public class TelegramService {
                 message.put("chat_id", chatId);
                 HttpResponse httpResponse = http.postRequest(telegramConfig.getPropertiesByKey("telegramURL") + "/bot" + botToken + "/sendMessage", new Gson().toJson(message));
                 if (httpResponse == null || httpResponse.getStatus() != 200) {
-                    resp.put("code", httpResponse == null ? 500 : httpResponse.getStatus());
-                    resp.put("error", httpResponse == null ? "Problem with telegram" : httpResponse.getStatusText());
+                    resp.put("code", 500);
+                    resp.put("error", "Problem with telegram");
                 }
             }));
         }

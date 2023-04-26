@@ -66,8 +66,7 @@ public class PingCommunicationChannelJob implements Job {
                             + "/setWebhook?ip_address=" + address
                             + "&url=" + telegramAPI.getPropertiesByKey("telegramRedirectURL") + "/getUpdates/?bot=" + botToken);
                     if (response == null || response.getStatus() != 200)
-                        logger.warn("Cannot change ip address for bot name: " + telegramBotModel.getName()
-                                + " response status: " + response.getStatus() + " message: " + response.getStatusText());
+                        logger.warn("Cannot change ip address for bot name: " + telegramBotModel.getName());
                 }
             });
         }

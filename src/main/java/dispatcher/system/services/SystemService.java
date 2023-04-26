@@ -24,7 +24,7 @@ public class SystemService {
 
     private static final Logger logger = LogManager.getLogger();
 
-    private ScheduledAPI scheduled = ScheduledAPI.getInstance();
+    private ScheduledAPI scheduledAPI = ScheduledAPI.getInstance();
     private AuthTokenAPI authTokenAPI = AuthTokenAPI.getInstance();
     private SystemConfig systemConfig = SystemConfig.getInstance();
 
@@ -41,7 +41,7 @@ public class SystemService {
         }
 
         if (systemJobList.size() > 0) {
-            systemJobList.forEach(systemJobModel -> scheduled.addJob("system", systemJobModel, systemJobModel.getRequest()));
+            systemJobList.forEach(systemJobModel -> scheduledAPI.addJob("system", systemJobModel, systemJobModel.getRequest()));
         }
     }
 

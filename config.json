@@ -38,5 +38,19 @@
         }
       }
     ]
+  },
+  "ping": {
+    "jobsConfig": [
+      {
+        "schedule": "0 * * * * ? *",
+        "jobName": "konex_sync_plugin",
+        "jobState": true,
+        "loopExecute": true,
+        "className": "dispatcher.ping.services.PingJob",
+        "request": {
+          "serverURL": "https://www.konex.com.ua/wp-json/konexapi/v1/sync_plugin"
+        }
+      }
+    ]
   }
 }

@@ -58,10 +58,7 @@ public class HTTP {
     public HttpResponse getRequest(String serverURL) {
         HttpResponse response = null;
         try {
-            response = Unirest.post(serverURL)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .asString();
+            response = Unirest.get(serverURL).asString();
         } catch (UnirestException e) {
             logger.info("Error get request: " + serverURL + "  EXCEPTION:" + e.getMessage());
         }

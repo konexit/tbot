@@ -74,13 +74,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "Success added job"
-                }
-              }
+              "$ref": "#/definitions/response.status"
             }
           }
         }
@@ -99,13 +93,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "ok"
-                }
-              }
+              "$ref": "#/definitions/response.status"
             }
           }
         }
@@ -138,13 +126,7 @@
           "200": {
             "description": "OK",
             "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "string",
-                  "example": "Success deleted job"
-                }
-              }
+              "$ref": "#/definitions/response.status"
             }
           }
         }
@@ -222,12 +204,11 @@
         }
       }
     },
-    "response.addJob": {
+    "response.status": {
       "type": "object",
       "properties": {
         "status": {
-          "type": "string",
-          "example": "ok"
+          "type": "string"
         }
       }
     },
