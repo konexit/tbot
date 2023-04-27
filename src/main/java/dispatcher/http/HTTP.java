@@ -101,8 +101,8 @@ public class HTTP {
 
     public void createResponseWithLog(HttpExchange httpExchange, String level, int statusCode, String cause, Map<String, List<String>> headers) {
         switch (level) {
-            case "info": logger.info(cause);
-            case "warn": logger.warn(cause);
+            case "info": logger.info(cause); break;
+            case "warn": logger.warn(cause); break;
         }
         createResponse(httpExchange, statusCode, "{\"status\": \"failed\", \"error\": \"" + cause + "\"}", headers);
     }

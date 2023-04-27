@@ -1,5 +1,6 @@
 package dispatcher.authToken;
 
+import com.sun.net.httpserver.HttpExchange;
 import dispatcher.authToken.service.AuthTokenService;
 
 public class AuthTokenAPI {
@@ -15,5 +16,9 @@ public class AuthTokenAPI {
 
     public String getToken(String authTokenURL, String ckEditorCredentials){
         return authTokenService.getToken(authTokenURL, ckEditorCredentials);
+    }
+
+    public Boolean validateToken(HttpExchange httpExchange, String authTokenURL){
+        return authTokenService.validateToken(httpExchange, authTokenURL);
     }
 }

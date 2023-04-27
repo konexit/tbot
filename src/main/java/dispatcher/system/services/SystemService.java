@@ -46,7 +46,7 @@ public class SystemService {
     }
 
     public String refreshDispatcherToken(){
-        String token = authTokenAPI.getToken((String) systemConfig.getPropertiesByKey("authTokenURL"), (String) systemConfig.getPropertiesByKey("ckEditor.Credentials"));
+        String token = authTokenAPI.getToken(systemConfig.getPropertiesByKey("authTokenURL") + "/login", (String) systemConfig.getPropertiesByKey("ckEditor.Credentials"));
         if (token != null)systemConfig.setDispatcherAuthToken(token);
         return token;
     }

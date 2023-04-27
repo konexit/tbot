@@ -3,8 +3,10 @@ package dispatcher.scheduled.services;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import dispatcher.authToken.AuthTokenAPI;
 import dispatcher.http.HTTP;
 import dispatcher.scheduled.models.JobConfigModel;
+import dispatcher.system.config.SystemConfig;
 import dispatcher.unit.Converter;
 
 import java.util.Map;
@@ -13,9 +15,17 @@ public class AddJobHandler implements HttpHandler {
 
     private HTTP http = HTTP.getInstance();
     private ScheduledService scheduledService = ScheduledService.getInstance();
+    private AuthTokenAPI authTokenAPI = AuthTokenAPI.getInstance();
+    private SystemConfig systemConfig = SystemConfig.getInstance();
 
     @Override
     public void handle(HttpExchange httpExchange) {
+        Boolean validToken = authTokenAPI.validateToken(httpExchange,systemConfig.getPropertiesByKey("authTokenURL") + "/publicKey");
+        if (!validToken) {
+            http.createResponse(httpExchange, 401, "{\"error\": \"JWT token is invalid\"}", null);
+            return;
+        }
+
         String json = Converter.getBodyFromHttpExchange(httpExchange);
 
         if (json.isEmpty()) {
@@ -35,7 +45,8 @@ public class AddJobHandler implements HttpHandler {
                         new TypeReference<JobConfigModel>(){});
 
         Map<String, Object> requestData =
-                (Map) Converter.convertObjectToSpecificObject(jsonMap.get("requestData"),  new TypeReference<Map<String, Object>>(){});
+                (Map) Converter.convertObjectToSpecificObject(jsonMap.get("requestData"),
+                        new TypeReference<Map<String, Object>>(){});
 
 
         if (jobGroup == null || jobConfigModel == null || requestData == null){
