@@ -34,6 +34,8 @@ public class BuildAPP {
                 || !telegramAPI.setTelegramConfig(config.get("telegram"))
                 || !pingAPI.setPingConfig(config.get("ping"))) return false;
 
+        systemAPI.refreshDispatcherToken();
+
         if (!scheduled.run()) return false;
         systemAPI.addSystemJobs();
         telegramAPI.addTelegramJobs();
