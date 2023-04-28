@@ -1,15 +1,15 @@
-# Dispatcher Bot
+# Dispatcher Bot 
 
-Сервіс для переадресування запитів із мессенджера на сервіси
+Додаток для взаємодії мессенджера та сервісів компанії КОНЕКС
 
 - Пінгування та сворення запитів на стороні сервіси за допомогою scheduler
 - Відправка повідомлення користувачу в мессенджер через бота
 - Список доступних ресурсів в REST API [swagger](http://10.10.1.14:8082/docs/)
  
 
-## Етапи початку розборки
+## Запуск проєкта
 
-1. Завантажте данний [проеєкт](https://github.com/konexit/tbot) 
-2. Змінити domain and port в application.properties в інших файлах (`application.properties`,`swagger/swagger.html`, `swagger/swagger.json`, `swagger/swagger.json`, `config.json`)
-3. Змінити basedir в `pom.xml` для билда swaggerResources
-4. Внести змінити у файл `config.json`
+1. Завантажте данний [проєкт](https://github.com/konexit/tbot) 
+2. Змінити domain and port в application.properties та в інших файлах: `application.properties`,`swagger/swagger.html`, `swagger/swagger.json`, `swagger/swagger.json`, `config.json`
+3. Змінити basedir в `pom.xml` для бiлда swaggerResources
+4. При необхідності внести змінити у файл `config.json`
