@@ -56,7 +56,7 @@
       ]
     },
 	"5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10": {
-      "server": "http://10.10.5.173:8082/getUpdates/?bot=5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10",
+      "server": "http://10.10.1.14:8082/getUpdates/?bot=5909738679:AAFy6XTZDQLCgW5Av2J29xYQ-HJ0KlYw-10",
       "name": "meters_konex_bot",
       "state": true
     }

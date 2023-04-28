@@ -11,7 +11,7 @@
     },
     "version": "1.0"
   },
-  "host": "10.10.5.173:8082",
+  "host": "10.10.1.14:8082",
   "basePath": "/",
   "paths": {
     "/sendMessageTelegram/": {
