@@ -14,6 +14,46 @@
   "host": "10.10.5.173:8082",
   "basePath": "/",
   "paths": {
+    "/sendMessageTelegram/": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "Telegram"
+        ],
+        "summary": "Відправка повідомлень.",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "Bearer [token]",
+            "name": "Authorization",
+            "in": "header",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Дані для відправки",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/request.sendMessageTelegram"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/response.botInfoWebHook"
+            }
+          }
+        }
+      }
+    },
     "/telegramBotStatusWebHook/": {
       "post": {
         "consumes": [
@@ -164,6 +204,71 @@
     }
   },
   "definitions": {
+    "request.sendMessageTelegram": {
+      "type": "object",
+      "properties": {
+        "telegramDispatcher": {
+          "type": "object",
+          "properties": {
+            "chat_id": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "example": 971483502
+              }
+            },
+            "sendMessage": {
+              "type": "boolean",
+              "example": true
+            },
+            "botName": {
+              "type": "string",
+              "example": "meters_konex_bot"
+            }
+          }
+        },
+        "telegram": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text": {
+                "type": "string",
+                "example": "<b>Упс... Ви не маєте права на дану дію 🤔</b>"
+              },
+              "parse_mode": {
+                "type": "string",
+                "example": "HTML"
+              },
+              "reply_markup": {
+                "type": "object",
+                "properties": {
+                  "inline_keyboard": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string",
+                            "example": "Повернутися до списка"
+                          },
+                          "callback_data": {
+                            "type": "string",
+                            "example": "adminMenu"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "request.botInfoWebHook": {
       "type": "object",
       "properties": {

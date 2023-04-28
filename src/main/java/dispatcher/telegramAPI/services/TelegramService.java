@@ -1,10 +1,10 @@
 package dispatcher.telegramAPI.services;
 
-import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import dispatcher.http.HTTP;
 import dispatcher.telegramAPI.config.TelegramConfig;
 import dispatcher.telegramAPI.models.ResponseJsonModel;
+import dispatcher.unit.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,8 +41,8 @@ public class TelegramService {
         if (chat_id != null) {
             chat_id.forEach((String chatId) -> jsonModel.getTelegram().forEach(message -> {
                 message.put("chat_id", chatId);
-                HttpResponse httpResponse = http.postRequest(telegramConfig.getPropertiesByKey("telegramURL") + "/bot" + botToken + "/sendMessage", new Gson().toJson(message));
-                if (httpResponse == null || httpResponse.getStatus() != 200) {
+                HttpResponse httpResponse = http.postRequest(telegramConfig.getPropertiesByKey("telegramURL") + "/bot" + botToken + "/sendMessage", Converter.convertObjectToJson(message));
+                if (httpResponse == null || (httpResponse.getStatus() != 200 && httpResponse.getStatus() != 403) ) {
                     resp.put("code", 500);
                     resp.put("error", "Problem with telegram");
                 }

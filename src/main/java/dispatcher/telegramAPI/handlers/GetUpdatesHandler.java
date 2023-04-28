@@ -1,8 +1,5 @@
 package dispatcher.telegramAPI.handlers;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -54,12 +51,9 @@ public class GetUpdatesHandler implements HttpHandler {
             return;
         }
 
-        ResponseJsonModel jsonModel;
-        try {
-            jsonModel = new Gson().fromJson(httpResponse.getBody().toString(), new TypeToken<ResponseJsonModel>() {}.getType());
-        } catch (JsonSyntaxException e) {
-            http.createResponseWithLog(httpExchange, "warn", 500,
-                    "Cannot convert response json to jsonModel EXCEPTION: " + e.getMessage(), null);
+        ResponseJsonModel jsonModel = (ResponseJsonModel) Converter.convertStringToSpecificObject(httpResponse.getBody().toString(), ResponseJsonModel.class);
+        if (jsonModel == null){
+            http.createResponseWithLog(httpExchange, "warn", 500, "Cannot convert response json to jsonModel", null);
             return;
         }
 

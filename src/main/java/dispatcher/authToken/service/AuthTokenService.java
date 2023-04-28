@@ -1,7 +1,5 @@
 package dispatcher.authToken.service;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import com.sun.net.httpserver.HttpExchange;
 import dispatcher.http.HTTP;
@@ -15,7 +13,6 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 public class AuthTokenService {
@@ -38,13 +35,9 @@ public class AuthTokenService {
             logger.info("Problem with authorization service");
         }
 
-        try {
-            Map<String, String> body = new Gson().fromJson(response.getBody().toString(), new TypeToken<HashMap<String, String>>() {}.getType());
-            return body.get("access_token");
-        } catch (Exception e){
-            logger.error("Problem with json from authorization service");
-            return null;
-        }
+        Map<String, String> body = (Map<String, String>) Converter.convertStringToSpecificObject(response.getBody().toString(), Map.class);
+        if (body == null) return null;
+        return body.get("access_token");
     }
 
     public Boolean validateToken(HttpExchange httpExchange, String authTokenURL){

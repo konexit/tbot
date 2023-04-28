@@ -23,6 +23,7 @@ public class TelegramConfig {
     private static final Logger logger = LogManager.getLogger();
     private Map<String, Object> telegramApplicationProperties = new HashMap<>();
     private Map<String, TelegramBotModel> mapTelegramConfig = new HashMap<>();
+    private Map<String, String> mapTelegramMetadata = new HashMap<>();
 
 
     public Boolean setTelegramConfig(JsonNode telegramConfigData){
@@ -38,6 +39,10 @@ public class TelegramConfig {
         if (telegramConfig == null) {
             logger.warn("Cannot convert json telegram config to HashMap");
             return false;
+        }
+
+        for (Map.Entry<String, TelegramBotModel> entry : telegramConfig.entrySet()) {
+            mapTelegramMetadata.put(entry.getValue().getName(), entry.getKey());
         }
 
         mapTelegramConfig = telegramConfig;
@@ -67,14 +72,7 @@ public class TelegramConfig {
         return mapTelegramConfig.get(botToken);
     }
 
-    public String getBotTokenByName(String botName){
-        String botTokenId = null;
-        for (Map.Entry<String, TelegramBotModel> entry : mapTelegramConfig.entrySet()) {
-            if (botName.equals(entry.getValue().getName())) {
-                botTokenId = entry.getKey();
-                break;
-            }
-        }
-        return botTokenId;
+    public String getTokenByBotName(String botName){
+        return mapTelegramMetadata.get(botName);
     }
 }

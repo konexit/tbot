@@ -8,6 +8,7 @@ import dispatcher.scheduled.services.InfoJobsHandler;
 import dispatcher.swagger.SwaggerHandler;
 import dispatcher.system.services.StaticFileHandler;
 import dispatcher.telegramAPI.handlers.GetUpdatesHandler;
+import dispatcher.telegramAPI.handlers.SendMessageHandler;
 import dispatcher.telegramAPI.services.TelegramBotStatusWebHook;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +39,7 @@ public class Main {
                     (Integer) buildAPP.systemAPI.getPropertiesByKey("serverPort")), 0);
 
             server.createContext("/getUpdates/", new GetUpdatesHandler());
+            server.createContext("/sendMessageTelegram/", new SendMessageHandler());
 
             server.createContext("/telegramBotStatusWebHook/", new TelegramBotStatusWebHook());
             server.createContext("/addJob/", new AddJobHandler());

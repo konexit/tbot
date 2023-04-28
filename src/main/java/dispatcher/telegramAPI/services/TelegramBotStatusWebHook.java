@@ -46,7 +46,7 @@ public class TelegramBotStatusWebHook implements HttpHandler {
             return;
         }
 
-        String botToken = telegramConfig.getBotTokenByName(botName);
+        String botToken = telegramConfig.getTokenByBotName(botName);
         if (botToken == null) {
             http.createResponseWithLog(httpExchange, "info", 500, "not found bot", null);
             return;

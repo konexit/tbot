@@ -1,10 +1,10 @@
 package dispatcher.http;
 
-import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sun.net.httpserver.HttpExchange;
+import dispatcher.unit.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
@@ -75,7 +75,7 @@ public class HTTP {
 
         try {
             if (jobDataMap.get("method") != null && jobDataMap.get("method").equals("POST")) {
-                String json = jobDataMap.get("json") != null ? new Gson().toJson(jobDataMap.get("json")).toString() : "{}";
+                String json = jobDataMap.get("json") != null ? Converter.convertObjectToJson(jobDataMap.get("json")) : "{}";
                 response = Unirest.post(jobDataMap.getString("serverURL")).headers(headers).body(json).asString();}
             else response = Unirest.get(jobDataMap.getString("serverURL")).headers(headers).asString();
         } catch (Exception e) {
