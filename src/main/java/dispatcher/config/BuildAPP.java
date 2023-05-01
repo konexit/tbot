@@ -1,6 +1,7 @@
 package dispatcher.config;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import dispatcher.ping.PingAPI;
 import dispatcher.scheduled.ScheduledAPI;
 import dispatcher.system.SystemAPI;
 import dispatcher.telegramAPI.TelegramAPI;
@@ -20,18 +21,25 @@ public class BuildAPP {
     public SystemAPI systemAPI = SystemAPI.getInstance();
     private ApplicationProperties applicationProperties = ApplicationProperties.getInstance();
     private TelegramAPI telegramAPI = TelegramAPI.getInstance();
+    private PingAPI pingAPI = PingAPI.getInstance();
 
     public Boolean init(){
         Properties properties = applicationProperties.getApplicationProperties();
 
-        if (properties.size() == 0 || !systemAPI.setSystemApplicationProperties(properties) || !telegramAPI.setTelegramApplicationProperties(properties)) return false;
+        if (properties.size() == 0 || !systemAPI.setSystemApplicationProperties(properties)
+                || !telegramAPI.setTelegramApplicationProperties(properties)) return false;
 
         JsonNode config = systemAPI.getConfigFile();
-        if (config == null || !systemAPI.setSystemConfig(config.get("system")) || !telegramAPI.setTelegramConfig(config.get("telegram"))) return false;
+        if (config == null || !systemAPI.setSystemConfig(config.get("system"))
+                || !telegramAPI.setTelegramConfig(config.get("telegram"))
+                || !pingAPI.setPingConfig(config.get("ping"))) return false;
+
+        systemAPI.refreshDispatcherToken();
 
         if (!scheduled.run()) return false;
         systemAPI.addSystemJobs();
         telegramAPI.addTelegramJobs();
+        pingAPI.addPingJobs();
 
         return true;
     }

@@ -2,15 +2,17 @@ package dispatcher.unit;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Converter {
 
@@ -32,6 +34,17 @@ public class Converter {
         return in.toString().trim();
     }
 
+    public static String getTextFromFileInProjectDir(String filePath){
+        String fileContent = "";
+        try {
+            byte[] bytes = Files.readAllBytes(Paths.get(System.getProperty("user.dir") + File.separator  + filePath));
+            fileContent = new String (bytes);
+        } catch (Exception e) {
+            logger.fatal("Cannot read file");
+        }
+        return fileContent;
+    }
+
     public static Object convertObjectToSpecificObject(Object object, TypeReference typeReference){
         try {
             return mapper.convertValue(object, typeReference);
@@ -41,9 +54,9 @@ public class Converter {
         }
     }
 
-    public static JsonNode convertStringToJsonNode(String json){
+    public static Object convertStringToSpecificObject(String json, Class valueType){
         try {
-            return mapper.readValue(json, JsonNode.class);
+            return mapper.readValue(json, valueType);
         } catch (JsonProcessingException e) {
             logger.warn("Cannot convert string to json node");
             return null;

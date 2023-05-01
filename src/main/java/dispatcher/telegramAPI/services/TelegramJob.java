@@ -1,13 +1,11 @@
 package dispatcher.telegramAPI.services;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import com.mashape.unirest.http.HttpResponse;
 import dispatcher.http.HTTP;
 import dispatcher.system.SystemAPI;
 import dispatcher.telegramAPI.TelegramAPI;
 import dispatcher.telegramAPI.models.ResponseJsonModel;
+import dispatcher.unit.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
@@ -40,11 +38,9 @@ public class TelegramJob implements Job {
             return;
         }
 
-        ResponseJsonModel jsonModel;
-        try {
-            jsonModel = new Gson().fromJson(httpResponse.getBody().toString(), new TypeToken<ResponseJsonModel>() {}.getType());
-        } catch (JsonSyntaxException e) {
-            logger.info("Cannot convert response json to jsonModel EXCEPTION: " + e.getMessage());
+        ResponseJsonModel jsonModel = (ResponseJsonModel) Converter.convertStringToSpecificObject(httpResponse.getBody().toString(), ResponseJsonModel.class);
+        if (jsonModel == null){
+            logger.info("Cannot convert response json to jsonModel");
             return;
         }
 

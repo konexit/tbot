@@ -1,10 +1,10 @@
 package dispatcher.http;
 
-import com.google.gson.Gson;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.sun.net.httpserver.HttpExchange;
+import dispatcher.unit.Converter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
@@ -12,6 +12,7 @@ import org.quartz.JobDataMap;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HTTP {
@@ -57,10 +58,7 @@ public class HTTP {
     public HttpResponse getRequest(String serverURL) {
         HttpResponse response = null;
         try {
-            response = Unirest.post(serverURL)
-                    .header("Accept", "application/json")
-                    .header("Content-Type", "application/json")
-                    .asString();
+            response = Unirest.get(serverURL).asString();
         } catch (UnirestException e) {
             logger.info("Error get request: " + serverURL + "  EXCEPTION:" + e.getMessage());
         }
@@ -77,7 +75,7 @@ public class HTTP {
 
         try {
             if (jobDataMap.get("method") != null && jobDataMap.get("method").equals("POST")) {
-                String json = jobDataMap.get("json") != null ? new Gson().toJson(jobDataMap.get("json")).toString() : "{}";
+                String json = jobDataMap.get("json") != null ? Converter.convertObjectToJson(jobDataMap.get("json")) : "{}";
                 response = Unirest.post(jobDataMap.getString("serverURL")).headers(headers).body(json).asString();}
             else response = Unirest.get(jobDataMap.getString("serverURL")).headers(headers).asString();
         } catch (Exception e) {
@@ -87,9 +85,11 @@ public class HTTP {
         return response;
     }
 
-    public void createResponse(HttpExchange httpExchange, int statusCode, String json) {
+    public void createResponse(HttpExchange httpExchange, int statusCode, String json, Map<String, List<String>> headers) {
         try {
             byte[] body = json.getBytes();
+            if (headers == null) httpExchange.getResponseHeaders().set("Content-Type", "application/json");
+            else httpExchange.getResponseHeaders().putAll(headers);
             httpExchange.sendResponseHeaders(statusCode, body.length);
             OutputStream outputStream = httpExchange.getResponseBody();
             outputStream.write(body);
@@ -97,5 +97,13 @@ public class HTTP {
         } catch (IOException e) {
             logger.warn("Cannot create response EXCEPTION: " + e.getMessage());
         }
+    }
+
+    public void createResponseWithLog(HttpExchange httpExchange, String level, int statusCode, String cause, Map<String, List<String>> headers) {
+        switch (level) {
+            case "info": logger.info(cause); break;
+            case "warn": logger.warn(cause); break;
+        }
+        createResponse(httpExchange, statusCode, "{\"status\": \"failed\", \"error\": \"" + cause + "\"}", headers);
     }
 }
